@@ -1,13 +1,14 @@
-import os
 from flask_appbuilder.security.manager import AUTH_DB, AUTH_OAUTH
+import os
 
 
 class Config:
-    SECRET_KEY = os.getenv('SECRET_KEY', '')
-    SQLALCHEMY_DATABASE_URI = 'postgresql://flask_user:flask_password@db/flask_app_db'
+    SECRET_KEY = os.getenv('SECRET_KEY')
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///app.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     AUTH_TYPE = AUTH_DB
+
     OAUTH_PROVIDERS = [{
         'name': 'github',
         'icon': 'fa-github',
