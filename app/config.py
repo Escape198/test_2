@@ -1,30 +1,34 @@
-from flask_appbuilder.security.manager import AUTH_DB, AUTH_OAUTH
 import os
+from flask_appbuilder.security.manager import AUTH_OAUTH, AUTH_DB
+from pathlib import Path
+from secrets import token_urlsafe
+from urllib.parse import urljoin
 
 
-class Config:
-    SECRET_KEY = os.getenv('SECRET_KEY')
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///app.db'
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+BASE_DIR = Path(__file__).resolve().parent
 
-    AUTH_TYPE = AUTH_DB
+SECRET_KEY = os.getenv('SECRET_KEY', token_urlsafe(24))
+VENDOR_GITHUB_AUTH = os.getenv('VENDOR_GITHUB_AUTH', 'https://github.com/login/oauth')
+VENDOR_GITHUB_API = os.getenv('VENDOR_GITHUB_API', 'https://api.github.com/')
+SQLALCHEMY_DATABASE_URI = f"sqlite:///{BASE_DIR / 'app.db'}"
+SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-    OAUTH_PROVIDERS = [{
-        'name': 'github',
-        'icon': 'fa-github',
-        'token_key': 'access_token',
-        'remote_app': {
-            'consumer_key': os.getenv('GITHUB_CLIENT_ID'),
-            'consumer_secret': os.getenv('GITHUB_CLIENT_SECRET'),
-            'request_token_params': {
-                'scope': 'email'
-            },
-            'base_url': os.getenv('VENDOR_GITHUB_API'),
-            'request_token_url': None,
-            'access_token_url': os.getenv('VENDOR_GITHUB_AUTH') + '/access_token',
-            'authorize_url': os.getenv('VENDOR_GITHUB_AUTH') + '/authorize',
+FAB_API_SWAGGER_UI = True
+AUTH_TYPE = AUTH_DB if os.getenv('AUTH_TYPE', 'AUTH_DB') == 'AUTH_DB' else AUTH_OAUTH
+
+OAUTH_PROVIDERS = [{
+    'name': 'github',
+    'token_key': 'access_token',
+    'icon': 'fa-github',
+    'remote_app': {
+        'client_id': os.getenv('GITHUB_CLIENT_ID'),
+        'client_secret': os.getenv('GITHUB_CLIENT_SECRET'),
+        'api_base_url': VENDOR_GITHUB_API,
+        'request_token_url': None,
+        'access_token_url': urljoin(VENDOR_GITHUB_AUTH, '/access_token'),
+        'authorize_url': urljoin(VENDOR_GITHUB_AUTH, '/authorize'),
+        'client_kwargs': {
+            'scope': 'user:email',
         }
-    }]
-
-    AUTH_USER_REGISTRATION = True
-    AUTH_USER_REGISTRATION_ROLE = 'Admin'
+    }
+}]
