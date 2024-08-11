@@ -2,9 +2,11 @@ version: '3.8'
 
 services:
   web:
+    env_file:
+      - .env
     build: .
     ports:
-      - "5000:5000"
+      - "5001:5001"
     environment:
       - FLASK_ENV=development
       - APP_CONFIG_FILE=/app/app/config.py
