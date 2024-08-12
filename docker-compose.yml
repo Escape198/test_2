@@ -6,7 +6,7 @@ services:
       - .env
     build: .
     ports:
-      - "5001:5001"
+      - "5001"
     environment:
       - FLASK_ENV=development
       - APP_CONFIG_FILE=/app/app/config.py
