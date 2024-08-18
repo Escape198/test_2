@@ -16,6 +16,4 @@ class CustomSecurityManager(SecurityManager):
                 password=generate_password_hash(password)
             )
 
-        user = self.find_user(username=username)
-
         return user
